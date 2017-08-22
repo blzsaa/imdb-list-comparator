@@ -3,5 +3,7 @@ image: maven:3-jdk-8
 build:
   script:
   - "mvn clean install -B"
+
+after_script:
   - "cd impl/target/site/jacoco/"
   - "type index.html"
