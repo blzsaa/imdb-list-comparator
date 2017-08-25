@@ -6,11 +6,13 @@ import static org.hamcrest.Matchers.containsString;
 import com.google.common.io.Resources;
 import demo.ImdbListComparatorApplication;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
@@ -29,13 +31,17 @@ public class ImdbListComparatorSeleniumTest {
 
   @LocalServerPort
   private int randomServerPort;
-  private WebDriver driver;
-  private File moviesCsv;
+  private static WebDriver driver;
+  private static File moviesCsv;
 
-  @Before
-  public void setUp() throws Exception {
+  private static void assertSourceContains(String source, String stringToContain) {
+    assertThat(StringUtils.deleteWhitespace(source),
+        containsString(StringUtils.deleteWhitespace(stringToContain)));
+  }
+
+  @BeforeClass
+  public static void beforeClass() throws IOException {
     System.setProperty("phantomjs.binary.path", Resources.getResource("phantomjs.exe").getPath());
-
     driver = new PhantomJSDriver();
 
     moviesCsv = new File("movies");
@@ -43,10 +49,25 @@ public class ImdbListComparatorSeleniumTest {
     Files.write(moviesCsv.toPath(), csv);
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void afterClass() throws Exception {
     Files.delete(moviesCsv.toPath());
     driver.quit();
+  }
+
+  @Test
+  public void shouldOnlyShowTableAndFilterWhenImdbListIsUploaded() throws Exception {
+    //given
+    driver.get("http://localhost:" + randomServerPort);
+    assertSourceContains(driver.getPageSource(),
+        "<div id=\"imdbListDiv\" style=\"display: none;\">");
+    uploadFile(moviesCsv);
+
+    //when
+    driver.findElement(By.id("myInput")).sendKeys("idewa");
+
+    //then
+    assertSourceContains(driver.getPageSource(), "<div id=\"imdbListDiv\">");
   }
 
   @Test
@@ -54,15 +75,14 @@ public class ImdbListComparatorSeleniumTest {
     //given
     driver.get("http://localhost:" + randomServerPort);
     uploadFile(moviesCsv);
-    System.out.println(driver.getPageSource());
+
     //when
     driver.findElement(By.id("myInput")).sendKeys("idewa");
 
     //then
-    String source = driver.getPageSource().replaceAll("\n", "");
-    assertThat(source, containsString("<tr>        <td>Sideways</td>      </tr>"));
-    assertThat(source,
-        containsString("<tr style=\"display: none;\">        <td>Matrix</td>      </tr>"));
+    assertSourceContains(driver.getPageSource(), "<tr><td>Sideways</td></tr>");
+    assertSourceContains(driver.getPageSource(),
+        "<tr style=\"display: none;\"><td>Matrix</td></tr>");
   }
 
   private void uploadFile(File moviesCsv1) {
