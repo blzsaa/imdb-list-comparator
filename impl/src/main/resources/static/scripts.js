@@ -1,13 +1,13 @@
-function hideWhenMovieTableIsEmpty() {
-if(document.getElementById("movieTable").getElementsByTagName("tr").length <= 1)
- document.getElementById("imdbListDiv").style.display= "none";
+function hideWhenMovieTableIsEmpty(index) {
+if(document.getElementById("movieTable"+index).getElementsByTagName("tr").length <= 1)
+ document.getElementById("movieTable"+index).style.display= "none";
 }
 
-function myFunction() {
+function filterFunction(listIndex) {
   var input, filter, table, tr, td, i;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
-  table = document.getElementById("movieTable");
+  table = document.getElementById("movieTable"+listIndex);
   tr = table.getElementsByTagName("tr");
   for (i = 0; i < tr.length; i++) {
     td = tr[i].getElementsByTagName("td")[0];

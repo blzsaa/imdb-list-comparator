@@ -1,34 +1,56 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Spring Boot Thymeleaf Hello World Example</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <link rel="stylesheet" type="text/css" href="style.css"/>
   <script type="text/javascript" src="scripts.js"></script>
 </head>
-<body onload="hideWhenMovieTableIsEmpty()">
-<form name="uploadingForm" enctype="multipart/form-data" action="/" method="POST">
+<body onload="hideWhenMovieTableIsEmpty(1),hideWhenMovieTableIsEmpty(2)">
+<input id="myInput" onkeyup="filterFunction(1),filterFunction(2)" placeholder="Search for names.."
+       title="Type in a title"/>
+<form name="uploadingForm1" enctype="multipart/form-data" action="/uploadList" method="POST">
   Upload encoded file:<br/>
-  <input id="fileInput" type="file" name="uploadingFiles"/>
-  <input id="fileInputSubmit" type="submit" value="Upload from file"/><br/>
-  <div id="imdbListDiv">
-    <input id="myInput" onkeyup="myFunction()" placeholder="Search for names.."
-           title="Type in a title"/>
-    <table id="movieTable">
-      <thead>
-      <tr>
-        <th>Title</th>
-      </tr>
-      </thead>
-      <tbody>
-      <th:block th:each="movie : ${movies}">
-        <tr>
-          <td th:text="${movie}">A Smoke Test'</td>
-        </tr>
-      </th:block>
-      </tbody>
-    </table>
-  </div>
+  <input type="hidden" name="list" value="movies1"/>
+  <input id="fileInput1" type="file" name="uploadingFiles"/>
+  <input id="fileInputSubmit1" type="submit" value="Upload from file"/>
 </form>
+<form name="uploadingForm2" enctype="multipart/form-data" action="/uploadList" method="POST">
+  <input type="hidden" name="list" value="movies2"/>
+  <input id="fileInput2" type="file" name="uploadingFiles"/>
+  <input id="fileInputSubmit2" type="submit" value="Upload from file"/><br/>
+</form>
+
+
+<table id="movieTable1">
+    <thead>
+    <tr>
+      <th>Title</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:each="movie : ${movies1}">
+      <tr>
+        <td th:text="${movie}">A Smoke Test'</td>
+      </tr>
+    </th:block>
+    </tbody>
+  </table>
+
+<table id="movieTable2">
+    <thead>
+    <tr>
+      <th>Title</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:each="movie : ${movies2}">
+      <tr>
+        <td th:text="${movie}">A Smoke Test'</td>
+      </tr>
+    </th:block>
+    </tbody>
+  </table>
+
 </body>
 </html>
