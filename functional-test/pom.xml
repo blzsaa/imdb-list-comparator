@@ -19,6 +19,31 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
+    <!--Dependency Versions-->
+    <selenium.version>3.4.0</selenium.version>
+    <hamcrest-all.version>1.3</hamcrest-all.version>
+    <phantomjsdriver.version>1.4.1</phantomjsdriver.version>
+    <!--Plugin Versions-->
+    <driver-binary-downloader-maven-plugin.version>1.0.14</driver-binary-downloader-maven-plugin.version>
+    <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+    <maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+    <!--Configuration Properties-->
+    <overwrite.binaries>false</overwrite.binaries>
+    <read.timeout>30000</read.timeout>
+    <connection.timeout>40000</connection.timeout>
+    <retry.attempts>4</retry.attempts>
+    <browser>chrome</browser>
+    <threads>1</threads>
+    <remote>false</remote>
+    <seleniumGridURL/>
+    <platform/>
+    <browserVersion/>
+    <proxyEnabled>false</proxyEnabled>
+    <proxyHost/>
+    <proxyPort/>
   </properties>
 
   <dependencies>
@@ -54,17 +79,128 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.detro.ghostdriver</groupId>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-remote-driver</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.github.detro.ghostdriver</groupId>
+          <artifactId>phantomjsdriver</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.github.detro.ghostdriver</groupId>
+          <artifactId>phantomjsdriver</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.codeborne</groupId>
       <artifactId>phantomjsdriver</artifactId>
-      <version>1.0.4</version>
+      <version>${phantomjsdriver.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-server</artifactId>
-      <version>2.34.0</version>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>1.7.0</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>selenium-tests</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <source>${java.version}</source>
+              <target>${java.version}</target>
+            </configuration>
+            <version>${maven-compiler-plugin.version}</version>
+          </plugin>
+          <plugin>
+            <groupId>com.lazerycode.selenium</groupId>
+            <artifactId>driver-binary-downloader-maven-plugin</artifactId>
+            <version>${driver-binary-downloader-maven-plugin.version}</version>
+            <configuration>
+              <rootStandaloneServerDirectory>
+                ${project.basedir}/src/test/resources/selenium_standalone_binaries
+              </rootStandaloneServerDirectory>
+              <downloadedZipFileDirectory>
+                ${project.basedir}/src/test/resources/selenium_standalone_zips
+              </downloadedZipFileDirectory>
+              <customRepositoryMap>${project.basedir}/src/test/resources/RepositoryMap.xml
+              </customRepositoryMap>
+              <overwriteFilesThatExist>${overwrite.binaries}</overwriteFilesThatExist>
+              <onlyGetDriversForHostOperatingSystem>true</onlyGetDriversForHostOperatingSystem>
+              <fileDownloadRetryAttempts>${retry.attempts}</fileDownloadRetryAttempts>
+              <fileDownloadReadTimeout>${read.timeout}</fileDownloadReadTimeout>
+              <operatingSystems>
+                <windows>true</windows>
+                <linux>true</linux>
+                <mac>true</mac>
+              </operatingSystems>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>selenium</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${maven-failsafe-plugin.version}</version>
+            <configuration>
+
+              <threadCount>${threads}</threadCount>
+              <systemPropertyVariables>
+                <browser>${browser}</browser>
+                <screenshotDirectory>${project.build.directory}/screenshots</screenshotDirectory>
+                <remoteDriver>${remote}</remoteDriver>
+                <gridURL>${seleniumGridURL}</gridURL>
+                <desiredPlatform>${platform}</desiredPlatform>
+                <desiredBrowserVersion>${browserVersion}</desiredBrowserVersion>
+                <proxyEnabled>${proxyEnabled}</proxyEnabled>
+                <proxyHost>${proxyHost}</proxyHost>
+                <proxyPort>${proxyPort}</proxyPort>
+
+                <!--Set properties passed in by the driver binary downloader-->
+                <!--suppress MavenModelInspection -->
+                <phantomjs.binary.path>${phantomjs.binary.path}</phantomjs.binary.path>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <!--This goal makes the build fail if you have test failures-->
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
