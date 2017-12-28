@@ -1,4 +1,4 @@
-package hu.balazs.web;
+package com.blzsaa.web;
 
 import java.io.IOException;
 import java.util.Arrays;

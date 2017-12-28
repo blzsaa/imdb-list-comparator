@@ -1,4 +1,4 @@
-package hu.balazs.web;
+package com.blzsaa.web;
 
 class ListControllerException extends RuntimeException {
 

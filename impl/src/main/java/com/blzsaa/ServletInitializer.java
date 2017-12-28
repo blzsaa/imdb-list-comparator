@@ -1,4 +1,4 @@
-package hu.balazs;
+package com.blzsaa;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;

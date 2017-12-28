@@ -1,4 +1,4 @@
-package hu.balazs.fute;
+package com.blzsaa.fute;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.common.collect.ImmutableMap;
-import hu.balazs.ImdbListComparatorApplication;
+import com.blzsaa.ImdbListComparatorApplication;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

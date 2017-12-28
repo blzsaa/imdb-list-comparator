@@ -1,10 +1,10 @@
-package hu.balazs.fute;
+package com.blzsaa.fute;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-import hu.balazs.ImdbListComparatorApplication;
+import com.blzsaa.ImdbListComparatorApplication;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
