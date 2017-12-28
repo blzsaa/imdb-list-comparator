@@ -1,4 +1,4 @@
-package com.blzsaa.fute;
+package com.blzsaa.integration;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
