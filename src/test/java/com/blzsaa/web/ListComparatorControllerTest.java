@@ -1,90 +1,92 @@
 package com.blzsaa.web;
 
-import org.assertj.core.api.Assertions;
+import com.blzsaa.service.ListReaderService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.blzsaa.ImdbListHelper.TITLE1;
+import static com.blzsaa.ImdbListHelper.TITLE2;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ListComparatorControllerTest {
 
-  private static final String CSV =
-      "title" + System.lineSeparator() + "Title1" + System.lineSeparator() + "Title2";
   private ListComparatorController controller;
-    @Mock
-    private Model model;
+  @Mock
+  private Model model;
   private MultipartFile[] files;
+  @Mock
+  private ListReaderService listReaderService;
 
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    controller = new ListComparatorController();
-      files = new MultipartFile[]{new MockMultipartFile("uploadedFile", "orig", "", CSV.getBytes())};
+
+    doReturn(List.of(TITLE1, TITLE2))
+            .when(listReaderService)
+            .readMovieTitlesFrom(any(MultipartFile[].class));
+    controller = new ListComparatorController(listReaderService);
   }
 
   @Test
   public void shouldFrontPageAppear() {
-      // when
+    // when
     String actual = controller.frontPage();
 
-      // then
+    // then
     assertThat(actual, is("welcome"));
   }
 
   @Test
   public void shouldUploadList_firstTime() {
-      // when
+    // when
     String actual = controller.uploadList(files, "list1", new HashMap<>(), model);
 
-      // then
+    // then
     assertThat(actual, is("welcome"));
-    verify(model).addAttribute("list1", Arrays.asList("Title1", "Title2"));
+    verify(model).addAttribute("list1", Arrays.asList(TITLE1, TITLE2));
   }
 
   @Test
   public void shouldOverwriteImdbListWithSameName() {
-      // given
+    // given
     HashMap<String, List<String>> movies = new HashMap<>();
     movies.put("list1", singletonList("oltTitle"));
 
-      // when
+    // when
     String actual = controller.uploadList(files, "list1", movies, model);
 
-      // then
+    // then
     assertThat(actual, is("welcome"));
-    verify(model).addAttribute("list1", Arrays.asList("Title1", "Title2"));
+    verify(model).addAttribute("list1", Arrays.asList(TITLE1, TITLE2));
   }
 
   @Test
   public void shouldNotOverwriteOtherImdbLists() {
-      // given
+    // given
     HashMap<String, List<String>> movies = new HashMap<>();
-    movies.put("list1", singletonList("oltTitle1"));
-    movies.put("list2", singletonList("oltTitle2"));
+    movies.put("list1", singletonList("oltTITLE1"));
+    movies.put("list2", singletonList("oltTITLE2"));
     movies.put("list3", singletonList("oltTitle3"));
 
-      // when
+    // when
     String actual = controller.uploadList(files, "list1", movies, model);
 
-      // then
+    // then
     assertThat(actual, is("welcome"));
-    verify(model).addAttribute("list1", Arrays.asList("Title1", "Title2"));
-    verify(model).addAttribute("list2", singletonList("oltTitle2"));
+    verify(model).addAttribute("list1", Arrays.asList(TITLE1, TITLE2));
+    verify(model).addAttribute("list2", singletonList("oltTITLE2"));
     verify(model).addAttribute("list3", singletonList("oltTitle3"));
   }
 
@@ -93,21 +95,4 @@ public class ListComparatorControllerTest {
     assertThat(controller.movies(), is(Collections.emptyMap()));
   }
 
-  @Test
-  public void shouldThrowListControllerExceptionWhenIOExceptionOccurs() throws Exception {
-      // given
-    MultipartFile multipartFile = mock(MultipartFile.class);
-    IOException toBeThrown = new IOException();
-    doThrow(toBeThrown).when(multipartFile).getBytes();
-
-    // when
-      Throwable thrown =
-              catchThrowable(
-                      () ->
-                              controller.uploadList(
-                                      new MultipartFile[]{multipartFile}, "list1", new HashMap<>(), model));
-
-      // then
-    Assertions.assertThat(thrown).isInstanceOf(ListControllerException.class).hasCause(toBeThrown);
-  }
 }
