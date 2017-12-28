@@ -9,5 +9,4 @@ public class ImdbListComparatorApplication {
   public static void main(String[] args) {
     SpringApplication.run(ImdbListComparatorApplication.class, args);
   }
-
 }
