@@ -1,6 +1,7 @@
 package com.blzsaa.web;
 
 import com.blzsaa.service.ListReaderService;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -33,7 +34,7 @@ public class ListComparatorControllerTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    doReturn(List.of(TITLE1, TITLE2))
+    doReturn(ImmutableList.of(TITLE1, TITLE2))
             .when(listReaderService)
             .readMovieTitlesFrom(any(MultipartFile[].class));
     controller = new ListComparatorController(listReaderService);
