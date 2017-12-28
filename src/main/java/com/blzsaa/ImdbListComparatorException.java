@@ -1,4 +1,4 @@
-package com.blzsaa.web;
+package com.blzsaa;
 
 public class ImdbListComparatorException extends RuntimeException {
 

@@ -1,6 +1,6 @@
 package com.blzsaa.service;
 
-import com.blzsaa.web.ImdbListComparatorException;
+import com.blzsaa.ImdbListComparatorException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.supercsv.io.CsvMapReader;

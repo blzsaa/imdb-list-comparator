@@ -1,6 +1,6 @@
 package com.blzsaa.service;
 
-import com.blzsaa.web.ImdbListComparatorException;
+import com.blzsaa.ImdbListComparatorException;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
