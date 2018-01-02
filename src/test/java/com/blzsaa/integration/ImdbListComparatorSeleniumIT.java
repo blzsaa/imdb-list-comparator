@@ -13,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.embedded.LocalServerPort;
@@ -44,11 +45,18 @@ public class ImdbListComparatorSeleniumIT {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        ChromeDriverManager.getInstance().setup();
-
-        ChromeOptions chromeOptions = new ChromeOptions();
+        final ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.setBinary("/path/to/google-chrome-stable");
         chromeOptions.addArguments("--headless");
-        driver = new ChromeDriver(chromeOptions);
+        chromeOptions.addArguments("--disable-gpu");
+
+        final DesiredCapabilities dc = new DesiredCapabilities();
+        dc.setJavascriptEnabled(true);
+        dc.setCapability(
+                ChromeOptions.CAPABILITY, chromeOptions
+        );
+
+        driver = new ChromeDriver(dc);
 
         moviesCsv = createFileWithContent("movies", "Sideways", "Matrix");
     }
